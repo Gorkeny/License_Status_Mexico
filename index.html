@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hudl License Dashboard · Mexico</title>
+<title>Hudl License Dashboard Â· Mexico</title>
 <style>
   :root {
     --bg: #0f1117;
@@ -260,12 +260,12 @@
     <div class="logo-icon">H</div>
     <div>
       <h1>License Monitor</h1>
-      <span>Hudl Mexico · Wyscout · Sportscode · WIMU</span>
+      <span>Hudl Mexico Â· Wyscout Â· Sportscode Â· WIMU</span>
     </div>
   </div>
   <div class="last-updated">
     <strong id="today-date"></strong>
-    Última actualización
+    Ãltima actualizaciÃ³n
   </div>
 </header>
 
@@ -278,12 +278,12 @@
   <div class="tile active">
     <div class="tile-label">Licencias Activas</div>
     <div class="tile-value" id="stat-active">0</div>
-    <div class="tile-sub">al día</div>
+    <div class="tile-sub">al dÃ­a</div>
   </div>
   <div class="tile expiring">
-    <div class="tile-label">Próximas a vencer</div>
+    <div class="tile-label">PrÃ³ximas a vencer</div>
     <div class="tile-value" id="stat-expiring">0</div>
-    <div class="tile-sub">en los próximos 30 días</div>
+    <div class="tile-sub">en los prÃ³ximos 30 dÃ­as</div>
   </div>
   <div class="tile expired">
     <div class="tile-label">Vencidas</div>
@@ -295,9 +295,14 @@
 <div class="filters">
   <div class="filter-group">
     <button class="filter-btn active" data-filter="all">Todos</button>
-    <button class="filter-btn" data-filter="status-active">✅ Activos</button>
-    <button class="filter-btn" data-filter="status-expiring">⚠️ Por vencer</button>
-    <button class="filter-btn" data-filter="status-expired">❌ Vencidos</button>
+    <button class="filter-btn" data-filter="status-active">â Activos</button>
+    <button class="filter-btn" data-filter="status-expiring">â¨ï¸ Por vencer</button>
+    <button class="filter-btn" data-filter="status-expired">â Vencidos</button>
+  </div>
+  <div class="filter-group">
+    <button class="filter-btn" data-filter="league-liga-mx">Liga MX</button>
+    <button class="filter-btn" data-filter="league-expansion">ExpansiÃ³n</button>
+    <button class="filter-btn" data-filter="league-seleccion">SelecciÃ³n</button>
   </div>
   <div class="filter-group">
     <button class="filter-btn wyscout" data-filter="has-wyscout">Wyscout</button>
@@ -305,7 +310,7 @@
     <button class="filter-btn wimu" data-filter="has-wimu">WIMU</button>
   </div>
   <div class="search-wrap">
-    <span class="search-icon">🔍</span>
+    <span class="search-icon">ð</span>
     <input type="text" class="search-box" id="search" placeholder="Buscar club..." />
   </div>
 </div>
@@ -313,7 +318,7 @@
 <div class="grid" id="grid"></div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
+// âââ DATA âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Format: { name, league, hudlId, services: { wyscout?, sportscode?, wimu? } }
 // service: { groupId, users, licenseStart, licenseEnd }
 // licenseEnd: null = no data, "ongoing" = sin vencimiento
@@ -322,104 +327,311 @@ const TODAY = new Date();
 TODAY.setHours(0,0,0,0);
 
 const CLUBS = [
+  // ââ LIGA MX ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   {
-    name: "Club de Futbol Cruz Azul",
-    abbr: "CAZ",
-    league: "Liga MX",
-    hudlId: "0010V00002KSiJiQAL",
-    color: "#1e3a5f",
+    name: "Club de Futbol Cruz Azul", abbr: "CAZ", league: "Liga MX",
+    hudlId: "0010V00002KSiJiQAL", color: "#003580",
     services: {
-      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      wyscout:    { groupId: "1002836", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: "96886",   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: "96886",   users: null, licenseStart: null, licenseEnd: null }
     }
   },
   {
-    name: "CF Monterrey Rayados",
-    abbr: "RAY",
-    league: "Liga MX",
-    hudlId: "001d0000024lgcVAAQ",
-    color: "#1a3a6e",
+    name: "CF Monterrey Rayados", abbr: "RAY", league: "Liga MX",
+    hudlId: "001d0000024lgcVAAQ", color: "#003DA5",
     services: {
-      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      wyscout:    { groupId: "1326",  users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: "63902", users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: "63902", users: null, licenseStart: null, licenseEnd: null }
     }
   },
   {
-    name: "Club Tigres UANL",
-    abbr: "TIG",
-    league: "Liga MX",
-    hudlId: "001d000002042v9AAA",
-    color: "#3d2b00",
+    name: "Club Tigres UANL", abbr: "TIG", league: "Liga MX",
+    hudlId: "001d000002042v9AAA", color: "#4a3000",
     services: {
-      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      wyscout:    { groupId: "678",    users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: "169353", users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: "169353", users: null, licenseStart: null, licenseEnd: null }
     }
   },
   {
-    name: "Chivas de Corazón, S.A. de C.V.",
-    abbr: "GDL",
-    league: "Liga MX",
-    hudlId: "0010V00002QIK1BQAX",
-    color: "#5a0000",
+    name: "Chivas de Guadalajara", abbr: "GDL", league: "Liga MX",
+    hudlId: "0010V00002QIK1BQAX", color: "#7a0000",
     services: {
-      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      wyscout:    { groupId: "4489", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
     }
   },
   {
-    name: "Club de Futbol America",
-    abbr: "AME",
-    league: "Liga MX",
-    hudlId: "001d0000022QA7TAAW",
-    color: "#3d2b00",
+    name: "Club de Futbol America", abbr: "AME", league: "Liga MX",
+    hudlId: "001d0000022QA7TAAW", color: "#4a3200",
     services: {
-      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      wyscout:    { groupId: "1002957", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
     }
   },
   {
-    name: "FC Juarez",
-    abbr: "FCJ",
-    league: "Liga MX",
-    hudlId: "0013w00002Rhm06AAB",
-    color: "#1a3a1a",
+    name: "FC JuÃ¡rez (Bravos)", abbr: "FCJ", league: "Liga MX",
+    hudlId: "0013w00002Rhm06AAB", color: "#1a0000",
     services: {
-      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      wyscout:    { groupId: "1004186", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
     }
   },
   {
-    name: "Xolos de Tijuana",
-    abbr: "TIJ",
-    league: "Liga MX",
-    hudlId: "A00149940",
-    color: "#1a1a3a",
+    name: "Club de FÃºtbol Pachuca", abbr: "PAC", league: "Liga MX",
+    hudlId: "001d0000022QA82AAG", color: "#003DA5",
+    services: {
+      wyscout:    { groupId: "1001631", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Deportivo Toluca", abbr: "TOL", league: "Liga MX",
+    hudlId: "001d000001u6YYiAAM", color: "#8B0000",
+    services: {
+      wyscout:    { groupId: "1007989", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Pumas UNAM", abbr: "PUM", league: "Liga MX",
+    hudlId: "0010V00002MwZtaQAF", color: "#002147",
+    services: {
+      wyscout:    { groupId: "2477", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club AtlÃ©tico de San Luis", abbr: "SLU", league: "Liga MX",
+    hudlId: "001d00000203uM0AAI", color: "#660000",
+    services: {
+      wyscout:    { groupId: "1048607", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Necaxa", abbr: "NEC", league: "Liga MX",
+    hudlId: "001d0000024lxVkAAI", color: "#8B0000",
+    services: {
+      wyscout:    { groupId: "5205", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club LeÃ³n", abbr: "LEO", league: "Liga MX",
+    hudlId: "0013w00002Rhlt0AAB", color: "#004d00",
+    services: {
+      wyscout:    { groupId: "3965", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club Santos Laguna", abbr: "SAN", league: "Liga MX",
+    hudlId: "0010V00002MwZtQQAV", color: "#006600",
+    services: {
+      wyscout:    { groupId: "638", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,  users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,  users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Atlas FC", abbr: "ATL", league: "Liga MX",
+    hudlId: "0013w00002STg1XAAT", color: "#3d0000",
+    services: {
+      wyscout:    { groupId: "5220", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "QuerÃ©taro FC", abbr: "QRO", league: "Liga MX",
+    hudlId: "001d000001y3RKuAAM", color: "#003DA5",
+    services: {
+      wyscout:    { groupId: "1347", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club Puebla", abbr: "PUE", league: "Liga MX",
+    hudlId: "001d0000022QA74AAG", color: "#0E2C5E",
+    services: {
+      wyscout:    { groupId: "1809", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Xolos de Tijuana", abbr: "TIJ", league: "Liga MX",
+    hudlId: "0010V00002MwZtuQAF", color: "#1a1a3a",
     services: {
       wyscout: {
         groupId: "1002834",
         users: [
-          { name: "Roberto Cornejo", role: "Club account", lastLogin: "2026-06-02" },
+          { name: "Roberto Cornejo", role: "Club account",  lastLogin: "2026-06-02" },
           { name: "Ignacio Palou",   role: "Scout account", lastLogin: "2026-06-01" },
-          { name: "Jorge A. Hank",  role: "Scout account", lastLogin: "2026-05-23" },
-          { name: "Fernando Arce",  role: "Scout account", lastLogin: "2026-05-13" },
-          { name: "Adrian Ochoa",   role: "Scout account", lastLogin: "2026-06-01" }
+          { name: "Jorge A. Hank",   role: "Scout account", lastLogin: "2026-05-23" },
+          { name: "Fernando Arce",   role: "Scout account", lastLogin: "2026-05-13" },
+          { name: "Adrian Ochoa",    role: "Scout account", lastLogin: "2026-06-01" }
         ],
         licenseStart: "2024-07-25",
         licenseEnd:   "2026-05-31"
       },
-      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
-      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+      sportscode: { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  // ââ LIGA DE EXPANSIÃN âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  {
+    name: "Atlante FC", abbr: "ATN", league: "Liga de ExpansiÃ³n",
+    hudlId: "001d000001y3RJQAA2", color: "#003DA5",
+    services: {
+      wyscout:    { groupId: "2631", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Alebrijes de Oaxaca", abbr: "OAX", league: "Liga de ExpansiÃ³n",
+    hudlId: "0018X000030FDLgQAO", color: "#006847",
+    services: {
+      wyscout:    { groupId: "5223", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "AtlÃ©tico Morelia", abbr: "MOR", league: "Liga de ExpansiÃ³n",
+    hudlId: "001d0000022QNmjAAG", color: "#5c0099",
+    services: {
+      wyscout:    { groupId: "1256739", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "CD TepatitlÃ¡n de Morelos", abbr: "TEP", league: "Liga de ExpansiÃ³n",
+    hudlId: "001d000001y3ed1AAA", color: "#8B0000",
+    services: {
+      wyscout:    { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "CancÃºn FC", abbr: "CUN", league: "Liga de ExpansiÃ³n",
+    hudlId: "0011L00002rOHA0QAO", color: "#005a9e",
+    services: {
+      wyscout:    { groupId: "3749", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "CD Mineros de Zacatecas", abbr: "ZAC", league: "Liga de ExpansiÃ³n",
+    hudlId: "001d000001y3RL8AAM", color: "#1a1a1a",
+    services: {
+      wyscout:    { groupId: "6207", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club Dorados de Sinaloa", abbr: "SIN", league: "Liga de ExpansiÃ³n",
+    hudlId: "0013w00002RhoaqAAB", color: "#7a6000",
+    services: {
+      wyscout:    { groupId: "1087234", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club Irapuato", abbr: "IRA", league: "Liga de ExpansiÃ³n",
+    hudlId: "0011L00002rOKzQQAW", color: "#8B0000",
+    services: {
+      wyscout:    { groupId: "1394239", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "CF Correcaminos UAT", abbr: "COR", league: "Liga de ExpansiÃ³n",
+    hudlId: "0010V00002QHnMKQA1", color: "#4a3200",
+    services: {
+      wyscout:    { groupId: "1032401", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "La Paz FC", abbr: "LPZ", league: "Liga de ExpansiÃ³n",
+    hudlId: "0011L00002rOHA6QAO", color: "#003DA5",
+    services: {
+      wyscout:    { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "TepatitlÃ¡n FC", abbr: "TFC", league: "Liga de ExpansiÃ³n",
+    hudlId: "0011L00002rOHA4QAO", color: "#8B0000",
+    services: {
+      wyscout:    { groupId: "1254503", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Tlaxcala FC", abbr: "TLX", league: "Liga de ExpansiÃ³n",
+    hudlId: "0011L00002rOHA5QAO", color: "#8B0000",
+    services: {
+      wyscout:    { groupId: "1265669", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Universidad de Guadalajara", abbr: "UDG", league: "Liga de ExpansiÃ³n",
+    hudlId: "001d00000203uMSAAY", color: "#003DA5",
+    services: {
+      wyscout:    { groupId: "3379", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,   users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,   users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Venados FC", abbr: "VEN", league: "Liga de ExpansiÃ³n",
+    hudlId: "001d000001y3RJAAA2", color: "#006600",
+    services: {
+      wyscout:    { groupId: "1002739", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,      users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,      users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  // ââ SELECCIÃN NACIONAL ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  {
+    name: "SelecciÃ³n Nacional de MÃ©xico", abbr: "SNM", league: "SelecciÃ³n",
+    hudlId: "0010V00002Mx9a5QAB", color: "#006847",
+    services: {
+      wyscout:    { groupId: "563", users: null, licenseStart: null, licenseEnd: null },
+      sportscode: { groupId: null,  users: null, licenseStart: null, licenseEnd: null },
+      wimu:       { groupId: null,  users: null, licenseStart: null, licenseEnd: null }
     }
   }
 ];
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
+// âââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function parseDate(s) {
   if (!s) return null;
@@ -434,7 +646,7 @@ function daysFromToday(d) {
 }
 
 function fmtDate(s) {
-  if (!s) return '—';
+  if (!s) return 'â';
   const d = new Date(s);
   return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
 }
@@ -489,11 +701,11 @@ function renderServiceRow(svcKey, svc) {
 
   let metaHtml = '';
   if (!svc || !svc.licenseEnd) {
-    metaHtml = `<div class="service-dates">Sin información</div>`;
+    metaHtml = `<div class="service-dates">Sin informaciÃ³n</div>`;
   } else {
     metaHtml = `
       <div class="service-dates">
-        <span>${fmtDate(svc.licenseStart)}</span> → <span>${fmtDate(svc.licenseEnd)}</span>
+        <span>${fmtDate(svc.licenseStart)}</span> â <span>${fmtDate(svc.licenseEnd)}</span>
       </div>
       ${userCount !== null ? `<div class="service-users"><strong>${userCount}</strong> licencias asignadas</div>` : ''}
     `;
@@ -563,7 +775,7 @@ function renderCard(club) {
   `;
 }
 
-// ─── RENDER ──────────────────────────────────────────────────────────────────
+// âââ RENDER ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function getStats() {
   let active = 0, expiring = 0, expired = 0;
@@ -581,18 +793,16 @@ function render(filterStatus = 'all', filterSvc = null, search = '') {
   const q = search.toLowerCase().trim();
 
   const visible = CLUBS.filter(c => {
-    if (q && !c.name.toLowerCase().includes(q)) return false;
-    if (filterStatus !== 'all' && !document.querySelector(`.club-card.${filterStatus}[data-name="${c.name.toLowerCase()}"]`)) {
-      if (filterStatus === 'status-active' && cardOverallStatus(c) !== 'active') return false;
-      if (filterStatus === 'status-expiring' && cardOverallStatus(c) !== 'expiring') return false;
-      if (filterStatus === 'status-expired' && cardOverallStatus(c) !== 'expired') return false;
-    }
-    if (filterStatus === 'status-active' && cardOverallStatus(c) !== 'active') return false;
+    if (q && !c.name.toLowerCase().includes(q) && !c.abbr.toLowerCase().includes(q)) return false;
+    if (filterStatus === 'status-active'   && cardOverallStatus(c) !== 'active')   return false;
     if (filterStatus === 'status-expiring' && cardOverallStatus(c) !== 'expiring') return false;
-    if (filterStatus === 'status-expired' && cardOverallStatus(c) !== 'expired') return false;
-    if (filterSvc === 'has-wyscout' && !c.services.wyscout?.licenseEnd) return false;
+    if (filterStatus === 'status-expired'  && cardOverallStatus(c) !== 'expired')  return false;
+    if (filterStatus === 'league-liga-mx'  && c.league !== 'Liga MX')              return false;
+    if (filterStatus === 'league-expansion'&& c.league !== 'Liga de ExpansiÃ³n')    return false;
+    if (filterStatus === 'league-seleccion'&& c.league !== 'SelecciÃ³n')            return false;
+    if (filterSvc === 'has-wyscout'    && !c.services.wyscout?.licenseEnd)    return false;
     if (filterSvc === 'has-sportscode' && !c.services.sportscode?.licenseEnd) return false;
-    if (filterSvc === 'has-wimu' && !c.services.wimu?.licenseEnd) return false;
+    if (filterSvc === 'has-wimu'       && !c.services.wimu?.licenseEnd)       return false;
     return true;
   });
 
@@ -601,7 +811,7 @@ function render(filterStatus = 'all', filterSvc = null, search = '') {
     : `<div class="empty-state">No se encontraron clubes con los filtros aplicados.</div>`;
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// âââ INIT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 document.addEventListener('DOMContentLoaded', () => {
   // Date
@@ -624,13 +834,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const f = btn.dataset.filter;
-      const isSvc = ['has-wyscout','has-sportscode','has-wimu'].includes(f);
-      const isStatus = ['all','status-active','status-expiring','status-expired'].includes(f);
+      const isSvc    = f.startsWith('has-');
+      const isLeague = f.startsWith('league-');
+      const isStatus = !isSvc && !isLeague;
 
       if (isStatus) {
-        document.querySelectorAll('.filter-btn[data-filter="all"], .filter-btn[data-filter^="status"]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn[data-filter^="status"], .filter-btn[data-filter="all"], .filter-btn[data-filter^="league-"]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = f;
+      }
+      if (isLeague) {
+        const already = btn.classList.contains('active');
+        document.querySelectorAll('.filter-btn[data-filter^="status"], .filter-btn[data-filter="all"], .filter-btn[data-filter^="league-"]').forEach(b => b.classList.remove('active'));
+        if (!already) { btn.classList.add('active'); currentFilter = f; }
+        else { document.querySelector('.filter-btn[data-filter="all"]').classList.add('active'); currentFilter = 'all'; }
       }
       if (isSvc) {
         if (btn.classList.contains('active')) {
