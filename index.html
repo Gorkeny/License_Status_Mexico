@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hudl License Dashboard · Mexico</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card2: #22263a;
+    --border: #2e3248;
+    --text: #e8eaf6;
+    --muted: #7b82a8;
+    --active: #22c55e;
+    --expiring: #f59e0b;
+    --expired: #ef4444;
+    --inactive: #6b7280;
+    --wyscout: #3b82f6;
+    --sportscode: #8b5cf6;
+    --wimu: #06b6d4;
+    --hudl-orange: #ff6b00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12151f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--hudl-orange);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; color: white;
+  }
+  .logo h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .logo span { font-size: 13px; color: var(--muted); display: block; }
+  .last-updated { font-size: 12px; color: var(--muted); text-align: right; }
+  .last-updated strong { color: var(--text); display: block; font-size: 13px; }
+
+  /* SUMMARY TILES */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 24px 32px 0;
+  }
+  .tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .tile.active::before { background: var(--active); }
+  .tile.expiring::before { background: var(--expiring); }
+  .tile.expired::before { background: var(--expired); }
+  .tile.total::before { background: var(--hudl-orange); }
+  .tile-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .tile-value { font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .tile.active .tile-value { color: var(--active); }
+  .tile.expiring .tile-value { color: var(--expiring); }
+  .tile.expired .tile-value { color: var(--expired); }
+  .tile.total .tile-value { color: var(--hudl-orange); }
+  .tile-sub { font-size: 12px; color: var(--muted); }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 24px 32px 16px;
+    flex-wrap: wrap;
+  }
+  .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--hudl-orange); color: var(--text); }
+  .filter-btn.active { background: var(--hudl-orange); border-color: var(--hudl-orange); color: white; }
+  .filter-btn.wyscout.active { background: var(--wyscout); border-color: var(--wyscout); }
+  .filter-btn.sportscode.active { background: var(--sportscode); border-color: var(--sportscode); }
+  .filter-btn.wimu.active { background: var(--wimu); border-color: var(--wimu); }
+  .search-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 16px 7px 36px;
+    border-radius: 20px;
+    font-size: 13px;
+    width: 220px;
+    position: relative;
+    outline: none;
+    margin-left: auto;
+  }
+  .search-box:focus { border-color: var(--hudl-orange); }
+  .search-wrap { position: relative; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    padding: 8px 32px 32px;
+  }
+
+  /* CLUB CARD */
+  .club-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .club-card:hover { transform: translateY(-2px); border-color: #3e4468; }
+  .club-card.status-expired { border-color: rgba(239,68,68,0.3); }
+  .club-card.status-expiring { border-color: rgba(245,158,11,0.3); }
+  .club-card.status-active { border-color: rgba(34,197,94,0.1); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .club-avatar {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; color: white;
+    flex-shrink: 0;
+  }
+  .club-info { flex: 1; min-width: 0; }
+  .club-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .club-league { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .status-badge {
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase; flex-shrink: 0;
+  }
+  .badge-active { background: rgba(34,197,94,0.15); color: var(--active); }
+  .badge-expiring { background: rgba(245,158,11,0.15); color: var(--expiring); }
+  .badge-expired { background: rgba(239,68,68,0.15); color: var(--expired); }
+  .badge-nodata { background: rgba(107,114,128,0.15); color: var(--inactive); }
+
+  /* SERVICES */
+  .card-services { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+  .service-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card2); border-radius: 10px; padding: 10px 12px;
+  }
+  .service-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot-wyscout { background: var(--wyscout); }
+  .dot-sportscode { background: var(--sportscode); }
+  .dot-wimu { background: var(--wimu); }
+  .dot-inactive { background: var(--inactive); }
+
+  .service-name {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; width: 90px; flex-shrink: 0;
+  }
+  .svc-wyscout { color: var(--wyscout); }
+  .svc-sportscode { color: var(--sportscode); }
+  .svc-wimu { color: var(--wimu); }
+  .svc-inactive { color: var(--inactive); }
+
+  .service-meta { flex: 1; min-width: 0; }
+  .service-dates { font-size: 11px; color: var(--muted); }
+  .service-dates span { color: var(--text); font-weight: 500; }
+  .service-users { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .service-users strong { color: var(--text); }
+
+  .service-status {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 10px; flex-shrink: 0; text-transform: uppercase;
+  }
+  .ss-active { background: rgba(34,197,94,0.15); color: var(--active); }
+  .ss-expiring { background: rgba(245,158,11,0.15); color: var(--expiring); }
+  .ss-expired { background: rgba(239,68,68,0.15); color: var(--expired); }
+  .ss-nodata { background: rgba(107,114,128,0.15); color: var(--inactive); }
+
+  .no-service {
+    font-size: 11px; color: var(--inactive);
+    padding: 6px 0; text-align: center;
+    font-style: italic;
+  }
+
+  /* FOOTER */
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted);
+  }
+  .days-badge {
+    font-weight: 700; padding: 2px 8px; border-radius: 8px;
+  }
+  .days-ok { background: rgba(34,197,94,0.1); color: var(--active); }
+  .days-warn { background: rgba(245,158,11,0.1); color: var(--expiring); }
+  .days-expired { background: rgba(239,68,68,0.1); color: var(--expired); }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center; padding: 60px; color: var(--muted);
+    grid-column: 1 / -1;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .summary { grid-template-columns: repeat(2, 1fr); }
+    .grid { grid-template-columns: 1fr; }
+    header { padding: 16px 20px; }
+    .summary, .filters, .grid { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">H</div>
+    <div>
+      <h1>License Monitor</h1>
+      <span>Hudl Mexico · Wyscout · Sportscode · WIMU</span>
+    </div>
+  </div>
+  <div class="last-updated">
+    <strong id="today-date"></strong>
+    Última actualización
+  </div>
+</header>
+
+<div class="summary">
+  <div class="tile total">
+    <div class="tile-label">Total Clubes</div>
+    <div class="tile-value" id="stat-total">0</div>
+    <div class="tile-sub">monitorizados</div>
+  </div>
+  <div class="tile active">
+    <div class="tile-label">Licencias Activas</div>
+    <div class="tile-value" id="stat-active">0</div>
+    <div class="tile-sub">al día</div>
+  </div>
+  <div class="tile expiring">
+    <div class="tile-label">Próximas a vencer</div>
+    <div class="tile-value" id="stat-expiring">0</div>
+    <div class="tile-sub">en los próximos 30 días</div>
+  </div>
+  <div class="tile expired">
+    <div class="tile-label">Vencidas</div>
+    <div class="tile-value" id="stat-expired">0</div>
+    <div class="tile-sub">sin renovar</div>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="status-active">✅ Activos</button>
+    <button class="filter-btn" data-filter="status-expiring">⚠️ Por vencer</button>
+    <button class="filter-btn" data-filter="status-expired">❌ Vencidos</button>
+  </div>
+  <div class="filter-group">
+    <button class="filter-btn wyscout" data-filter="has-wyscout">Wyscout</button>
+    <button class="filter-btn sportscode" data-filter="has-sportscode">Sportscode</button>
+    <button class="filter-btn wimu" data-filter="has-wimu">WIMU</button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-box" id="search" placeholder="Buscar club..." />
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+// Format: { name, league, hudlId, services: { wyscout?, sportscode?, wimu? } }
+// service: { groupId, users, licenseStart, licenseEnd }
+// licenseEnd: null = no data, "ongoing" = sin vencimiento
+
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+const CLUBS = [
+  {
+    name: "Club de Futbol Cruz Azul",
+    abbr: "CAZ",
+    league: "Liga MX",
+    hudlId: "0010V00002KSiJiQAL",
+    color: "#1e3a5f",
+    services: {
+      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "CF Monterrey Rayados",
+    abbr: "RAY",
+    league: "Liga MX",
+    hudlId: "001d0000024lgcVAAQ",
+    color: "#1a3a6e",
+    services: {
+      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club Tigres UANL",
+    abbr: "TIG",
+    league: "Liga MX",
+    hudlId: "001d000002042v9AAA",
+    color: "#3d2b00",
+    services: {
+      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Chivas de Corazón, S.A. de C.V.",
+    abbr: "GDL",
+    league: "Liga MX",
+    hudlId: "0010V00002QIK1BQAX",
+    color: "#5a0000",
+    services: {
+      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Club de Futbol America",
+    abbr: "AME",
+    league: "Liga MX",
+    hudlId: "001d0000022QA7TAAW",
+    color: "#3d2b00",
+    services: {
+      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "FC Juarez",
+    abbr: "FCJ",
+    league: "Liga MX",
+    hudlId: "0013w00002Rhm06AAB",
+    color: "#1a3a1a",
+    services: {
+      wyscout:     { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  },
+  {
+    name: "Xolos de Tijuana",
+    abbr: "TIJ",
+    league: "Liga MX",
+    hudlId: "A00149940",
+    color: "#1a1a3a",
+    services: {
+      wyscout: {
+        groupId: "1002834",
+        users: [
+          { name: "Roberto Cornejo", role: "Club account", lastLogin: "2026-06-02" },
+          { name: "Ignacio Palou",   role: "Scout account", lastLogin: "2026-06-01" },
+          { name: "Jorge A. Hank",  role: "Scout account", lastLogin: "2026-05-23" },
+          { name: "Fernando Arce",  role: "Scout account", lastLogin: "2026-05-13" },
+          { name: "Adrian Ochoa",   role: "Scout account", lastLogin: "2026-06-01" }
+        ],
+        licenseStart: "2024-07-25",
+        licenseEnd:   "2026-05-31"
+      },
+      sportscode:  { groupId: null, users: null, licenseStart: null, licenseEnd: null },
+      wimu:        { groupId: null, users: null, licenseStart: null, licenseEnd: null }
+    }
+  }
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+
+function parseDate(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function daysFromToday(d) {
+  if (!d) return null;
+  return Math.round((d - TODAY) / 86400000);
+}
+
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function serviceStatus(svc) {
+  if (!svc || !svc.licenseEnd) return 'nodata';
+  const end = parseDate(svc.licenseEnd);
+  const days = daysFromToday(end);
+  if (days < 0) return 'expired';
+  if (days <= 30) return 'expiring';
+  return 'active';
+}
+
+function cardOverallStatus(club) {
+  const statuses = ['wyscout','sportscode','wimu'].map(s => serviceStatus(club.services[s]));
+  if (statuses.includes('expired')) return 'expired';
+  if (statuses.includes('expiring')) return 'expiring';
+  if (statuses.includes('active')) return 'active';
+  return 'nodata';
+}
+
+function badgeHtml(status) {
+  const map = { active: ['badge-active','Activo'], expiring: ['badge-expiring','Por vencer'], expired: ['badge-expired','Vencido'], nodata: ['badge-nodata','Sin datos'] };
+  const [cls, label] = map[status] || map.nodata;
+  return `<span class="status-badge ${cls}">${label}</span>`;
+}
+
+function svcStatusHtml(status, days) {
+  if (status === 'nodata') return `<span class="service-status ss-nodata">Sin datos</span>`;
+  if (status === 'expired') return `<span class="service-status ss-expired">Vencida</span>`;
+  if (status === 'expiring') return `<span class="service-status ss-expiring">${days}d</span>`;
+  return `<span class="service-status ss-active">Activa</span>`;
+}
+
+function avatarColor(abbr) {
+  const colors = ['#3b82f6','#8b5cf6','#ec4899','#06b6d4','#10b981','#f59e0b','#ef4444','#6366f1'];
+  let hash = 0;
+  for (const c of abbr) hash = (hash * 31 + c.charCodeAt(0)) % colors.length;
+  return colors[hash];
+}
+
+function renderServiceRow(svcKey, svc) {
+  const labels = { wyscout: 'Wyscout', sportscode: 'Sportscode', wimu: 'WIMU' };
+  const dotCls = { wyscout: 'dot-wyscout', sportscode: 'dot-sportscode', wimu: 'dot-wimu' };
+  const nameCls = { wyscout: 'svc-wyscout', sportscode: 'svc-sportscode', wimu: 'svc-wimu' };
+
+  const status = serviceStatus(svc);
+  const end = parseDate(svc ? svc.licenseEnd : null);
+  const days = daysFromToday(end);
+
+  const userCount = svc && svc.users ? svc.users.length : null;
+
+  let metaHtml = '';
+  if (!svc || !svc.licenseEnd) {
+    metaHtml = `<div class="service-dates">Sin información</div>`;
+  } else {
+    metaHtml = `
+      <div class="service-dates">
+        <span>${fmtDate(svc.licenseStart)}</span> → <span>${fmtDate(svc.licenseEnd)}</span>
+      </div>
+      ${userCount !== null ? `<div class="service-users"><strong>${userCount}</strong> licencias asignadas</div>` : ''}
+    `;
+  }
+
+  const isActive = svc && svc.licenseEnd;
+  const dc = isActive ? dotCls[svcKey] : 'dot-inactive';
+  const nc = isActive ? nameCls[svcKey] : 'svc-inactive';
+
+  return `
+    <div class="service-row">
+      <div class="service-dot ${dc}"></div>
+      <div class="service-name ${nc}">${labels[svcKey]}</div>
+      <div class="service-meta">${metaHtml}</div>
+      ${svcStatusHtml(status, days)}
+    </div>
+  `;
+}
+
+function renderCard(club) {
+  const overall = cardOverallStatus(club);
+  const avColor = avatarColor(club.abbr);
+
+  // Days info for footer
+  const ends = ['wyscout','sportscode','wimu']
+    .map(s => parseDate(club.services[s]?.licenseEnd))
+    .filter(Boolean);
+  const nextEnd = ends.sort((a,b) => a-b)[0];
+  const nextDays = daysFromToday(nextEnd);
+
+  let footerDays = '';
+  if (nextDays !== null) {
+    if (nextDays < 0) {
+      footerDays = `<span class="days-badge days-expired">Vencida hace ${Math.abs(nextDays)}d</span>`;
+    } else if (nextDays <= 30) {
+      footerDays = `<span class="days-badge days-warn">Vence en ${nextDays}d</span>`;
+    } else {
+      footerDays = `<span class="days-badge days-ok">Vence en ${nextDays}d</span>`;
+    }
+  }
+
+  // Build service classes for filtering
+  const svcClasses = ['wyscout','sportscode','wimu']
+    .filter(s => club.services[s]?.licenseEnd)
+    .map(s => `has-${s}`).join(' ');
+
+  return `
+    <div class="club-card status-${overall} ${svcClasses}" data-name="${club.name.toLowerCase()}" data-status="${overall}">
+      <div class="card-header">
+        <div class="club-avatar" style="background:${avColor}">${club.abbr}</div>
+        <div class="club-info">
+          <div class="club-name" title="${club.name}">${club.name}</div>
+          <div class="club-league">${club.league}</div>
+        </div>
+        ${badgeHtml(overall)}
+      </div>
+      <div class="card-services">
+        ${renderServiceRow('wyscout', club.services.wyscout)}
+        ${renderServiceRow('sportscode', club.services.sportscode)}
+        ${renderServiceRow('wimu', club.services.wimu)}
+      </div>
+      <div class="card-footer">
+        <span>ID: ${club.hudlId}</span>
+        ${footerDays}
+      </div>
+    </div>
+  `;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+function getStats() {
+  let active = 0, expiring = 0, expired = 0;
+  CLUBS.forEach(c => {
+    const s = cardOverallStatus(c);
+    if (s === 'active') active++;
+    else if (s === 'expiring') expiring++;
+    else if (s === 'expired') expired++;
+  });
+  return { total: CLUBS.length, active, expiring, expired };
+}
+
+function render(filterStatus = 'all', filterSvc = null, search = '') {
+  const grid = document.getElementById('grid');
+  const q = search.toLowerCase().trim();
+
+  const visible = CLUBS.filter(c => {
+    if (q && !c.name.toLowerCase().includes(q)) return false;
+    if (filterStatus !== 'all' && !document.querySelector(`.club-card.${filterStatus}[data-name="${c.name.toLowerCase()}"]`)) {
+      if (filterStatus === 'status-active' && cardOverallStatus(c) !== 'active') return false;
+      if (filterStatus === 'status-expiring' && cardOverallStatus(c) !== 'expiring') return false;
+      if (filterStatus === 'status-expired' && cardOverallStatus(c) !== 'expired') return false;
+    }
+    if (filterStatus === 'status-active' && cardOverallStatus(c) !== 'active') return false;
+    if (filterStatus === 'status-expiring' && cardOverallStatus(c) !== 'expiring') return false;
+    if (filterStatus === 'status-expired' && cardOverallStatus(c) !== 'expired') return false;
+    if (filterSvc === 'has-wyscout' && !c.services.wyscout?.licenseEnd) return false;
+    if (filterSvc === 'has-sportscode' && !c.services.sportscode?.licenseEnd) return false;
+    if (filterSvc === 'has-wimu' && !c.services.wimu?.licenseEnd) return false;
+    return true;
+  });
+
+  grid.innerHTML = visible.length
+    ? visible.map(renderCard).join('')
+    : `<div class="empty-state">No se encontraron clubes con los filtros aplicados.</div>`;
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Date
+  document.getElementById('today-date').textContent =
+    TODAY.toLocaleDateString('es-MX', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+  // Stats
+  const stats = getStats();
+  document.getElementById('stat-total').textContent = stats.total;
+  document.getElementById('stat-active').textContent = stats.active;
+  document.getElementById('stat-expiring').textContent = stats.expiring;
+  document.getElementById('stat-expired').textContent = stats.expired;
+
+  // Initial render
+  let currentFilter = 'all';
+  let currentSvc = null;
+  render();
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      const isSvc = ['has-wyscout','has-sportscode','has-wimu'].includes(f);
+      const isStatus = ['all','status-active','status-expiring','status-expired'].includes(f);
+
+      if (isStatus) {
+        document.querySelectorAll('.filter-btn[data-filter="all"], .filter-btn[data-filter^="status"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = f;
+      }
+      if (isSvc) {
+        if (btn.classList.contains('active')) {
+          btn.classList.remove('active');
+          currentSvc = null;
+        } else {
+          document.querySelectorAll('.filter-btn[data-filter^="has-"]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentSvc = f;
+        }
+      }
+
+      const q = document.getElementById('search').value;
+      render(currentFilter, currentSvc, q);
+    });
+  });
+
+  // Search
+  document.getElementById('search').addEventListener('input', e => {
+    render(currentFilter, currentSvc, e.target.value);
+  });
+});
+</script>
+</body>
+</html>
